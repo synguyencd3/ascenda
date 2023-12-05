@@ -1,11 +1,14 @@
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
+
 
 
 public class Main {
@@ -17,16 +20,18 @@ public class Main {
     }
     public static void main(String[] args) throws IOException {
         //Read input and does initialzation
-        JSONObject offers;
+        JSONObject input;
         try {
-            offers = readFile("input.json");
+            input = readFile("input.json");
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        System.out.println(offers);
-        for (JSONObject i; i))
-        {
 
+        JSONArray offers = (JSONArray) input.get("offers");
+        List<Offer> OffersList = new ArrayList<Offer>();
+        for (int i=0;i<offers.size();i++)
+        {
+            OffersList.add( new Offer((JSONObject) offers.get(i)) );
         }
     }
 }
