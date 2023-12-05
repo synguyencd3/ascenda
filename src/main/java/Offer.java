@@ -1,3 +1,5 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.json.simple.JSONArray;
@@ -8,18 +10,26 @@ public class Offer {
     private String title;
     private String description;
     private long category;
-    private Merchant merchant;
-    private String valid_to;
+    private Merchant closetMerchant;
+    private LocalDate validTo;
+
+    public LocalDate getValidTo() {
+        return validTo;
+    }
 
     private Merchant getClosetMerchant(JSONArray merchants)
     {
          Merchant closetMerchant = new Merchant((JSONObject) merchants.get(0));
-         int index=0;
+
          for (int i=1; i<merchants.size();i++ )
          {
-            if ( (long)  )
+            JSONObject merchant = (JSONObject) merchants.get(i);
+            if ((double) merchant.get("distance") < closetMerchant.getDistance())
+            {
+                closetMerchant = new Merchant((JSONObject) merchants.get(i));
+            }
          }
-         return null;
+         return closetMerchant;
     }
 
     Offer(JSONObject offer)
@@ -28,7 +38,7 @@ public class Offer {
         this.title = (String) offer.get("title");
         this.description = (String) offer.get("description");
         this.category = (long) offer.get("category");
-        this.valid_to = (String) offer.get("valid_to");
-        this.merchant = getClosetMerchant((JSONArray) offer.get("merchants"));
+        this.validTo = LocalDate.parse((String) offer.get("valid_to"), DateTimeFormatter.ISO_DATE);
+        this.closetMerchant = getClosetMerchant((JSONArray) offer.get("merchants"));
     }
 }

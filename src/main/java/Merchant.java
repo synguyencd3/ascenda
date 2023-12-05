@@ -3,7 +3,11 @@ import org.json.simple.JSONObject;
 public class Merchant {
     private long id;
     private String name;
-    public double distance;
+    private double distance;
+
+    public double getDistance() {
+        return distance;
+    }
 
     Merchant (JSONObject merchant)
     {
