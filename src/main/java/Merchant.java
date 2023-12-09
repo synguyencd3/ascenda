@@ -15,4 +15,13 @@ public class Merchant {
         this.name = (String) merchant.get("name");
         this.distance = (double) merchant.get("distance");
     }
+
+    public JSONObject toJSON()
+    {
+        JSONObject jo = new JSONObject();
+        jo.put("id", this.id);
+        jo.put("name", this.name);
+        jo.put("distance", this.distance);
+        return jo;
+    }
 }
