@@ -1,0 +1,28 @@
+{
+    "offers": [
+        {
+            "valid_to": 2020-05-01,
+            "description": "Offer 4 description",
+            "id": 4,
+            "title": "Offer 4",
+            "category": 4,
+            "merchants": {
+                "distance": 0.3,
+                "name": "Offer4 Merchant1",
+                "id": 5
+            }
+        },
+        {
+            "valid_to": 2020-05-01,
+            "description": "Offer 6 description",
+            "id": 6,
+            "title": "Offer 6",
+            "category": 2,
+            "merchants": {
+                "distance": 1.3,
+                "name": "Offer6 Merchant1",
+                "id": 7
+            }
+        }
+    ]
+}

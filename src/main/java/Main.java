@@ -2,17 +2,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.Scanner;
-import java.util.HashMap;
+import java.util.*;
 
 public class Main {
 
@@ -23,8 +18,8 @@ public class Main {
 
     public static JSONObject ReadFileInput(String filename) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(new FileReader("input.json"));
-         return (JSONObject) obj;
+        Object obj = parser.parse(new FileReader(filename));
+        return (JSONObject) obj;
     }
 
     public static LocalDate ReadUserInput(){
@@ -47,7 +42,49 @@ public class Main {
         return date;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static Map<Long, Offer> filterOffer(JSONArray offers, LocalDate checkInAfter5Days)
+    {
+        Map<Long, Offer> map = new HashMap<Long, Offer>();
+        for (int i=0;i<offers.size();i++)
+        {
+            Offer offer =  new Offer((JSONObject) offers.get(i));
+            if (offer.getValidTo().isBefore(checkInAfter5Days) || offer.getCategory()==Hotel) continue;
+            if (map.putIfAbsent(offer.getCategory(), offer)!=null)
+            {
+                Offer closetDistanceOffer = map.get(offer.getCategory());
+                map.put(offer.getCategory(), offer.Compare(closetDistanceOffer));
+            } 
+        }
+        return map;
+    }
+
+    public static void write(List<Offer> offerList)
+    {
+        JSONObject output = new JSONObject();
+        JSONArray arr = new JSONArray();
+        for (int i=0;i<=1;i++)
+        {
+            try {
+                Offer offer = offerList.get(i);
+                arr.add(offer.toJSON());
+            }
+            catch (Exception e)
+            {
+                continue;
+            }
+        }
+        output.put("offers",arr);
+
+        try {
+         FileWriter file = new FileWriter("output.json");
+         file.write(output.toJSONString());
+         file.close();
+      } catch (IOException e) {
+         e.printStackTrace();
+      }
+    }
+
+    public static void main(String[] args) {
         
         LocalDate date = ReadUserInput();
         LocalDate checkInAfter5Days = date.plusDays(5);
@@ -57,40 +94,16 @@ public class Main {
             input = ReadFileInput("input.json");
         } catch (ParseException e) {
             throw new RuntimeException(e);
+        } catch (IOException e) {
+             throw new RuntimeException(e);
         }
         // Process input
         JSONArray offers = (JSONArray) input.get("offers");
-        Map<Long, Offer> map = new HashMap<Long, Offer>();
-        for (int i=0;i<offers.size();i++)
-        {
-            Offer offer =  new Offer((JSONObject) offers.get(i));
-            if (offer.getValidTo().isBefore(checkInAfter5Days) || offer.getCategory()==Hotel) continue;
-
-            if (map.putIfAbsent(offer.getCategory(), offer)!=null)
-            {
-                Offer closetDistanceOffer = map.get(offer.getCategory());
-                map.put(offer.getCategory(), offer.Compare(closetDistanceOffer));
-            } 
-        };
-
-        Queue<Offer> offerList = new PriorityQueue<Offer>(new OfferComparator());
-        map.entrySet().forEach(entry -> offerList.add(entry.getValue()));
+        Map<Long, Offer> map = filterOffer(offers, checkInAfter5Days);
+        List<Offer> offerList = new ArrayList<Offer>(map.values());
+        offerList.sort(new OfferComparator());
         
-        JSONObject output = new JSONObject();
-        JSONArray arr = new JSONArray();
-        for (int i=1;i<=2;i++)
-        {
-        arr.add(offerList.remove().toJSON());
-        }
-        output.put("offers",arr);
-
-        try {
-         FileWriter file = new FileWriter("output.json");
-         file.write(output.toJSONString());
-         file.close();
-      } catch (IOException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+        //Write
+        write(offerList);
     }
 }
