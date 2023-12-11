@@ -55,7 +55,7 @@ public class Offer {
         jo.put("description", this.description);
         jo.put("category", this.category);
         jo.put("merchants", this.closetMerchant.toJSON());
-        jo.put("valid_to", this.validTo);
+        jo.put("valid_to", this.validTo.toString());
         return jo;
     }
     
